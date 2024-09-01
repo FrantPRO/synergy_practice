@@ -1,0 +1,17 @@
+/.venv/
+/.idea/
+/.vscode/
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+*.so
+
+.Python
+build/
+
+*.manifest
+*.spec
+
+code-bundle*.txt
