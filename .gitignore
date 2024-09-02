@@ -1,6 +1,7 @@
-/.venv/
-/.idea/
-/.vscode/
+.venv/
+.idea/
+.vscode/
+.fleet/
 
 __pycache__/
 *.py[cod]
