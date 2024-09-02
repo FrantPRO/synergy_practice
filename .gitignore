@@ -11,6 +11,7 @@ CMakeFiles/
 CMake*$.*
 
 *.so
+.DS_Store
 
 .Python
 build/
