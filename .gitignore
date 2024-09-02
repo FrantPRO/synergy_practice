@@ -8,7 +8,9 @@ __pycache__/
 *$py.class
 .cache/
 CMakeFiles/
-CMake*$.*
+CMake*.*
+cmake*.*
+compile_commands.json
 
 *.so
 .DS_Store
