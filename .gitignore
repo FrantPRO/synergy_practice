@@ -22,4 +22,5 @@ dist/
 *.manifest
 *.spec
 
-code-bundle*.txt
+*code*.txt
+*code*.md
