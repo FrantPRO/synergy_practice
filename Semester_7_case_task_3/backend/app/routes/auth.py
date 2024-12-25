@@ -3,8 +3,8 @@ from flask_bcrypt import check_password_hash
 from flask_jwt_extended import create_access_token
 import datetime
 
-from app.models import User
-from app import bcrypt, db
+from ..models import User
+from .. import bcrypt, db
 
 auth_blueprint = Blueprint('auth', __name__)
 

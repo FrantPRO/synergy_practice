@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -11,16 +13,19 @@ jwt = JWTManager()
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object('backend.config.Config')
+    if os.getenv("FLASK_ENV") == "test":
+        app.config.from_object('backend.app.config.Config')  # Для тестов
+    else:
+        app.config.from_object('app.config.Config')  # Для запуска приложения
 
     bcrypt.init_app(app)  # Привязываем Bcrypt к приложению
     jwt.init_app(app)  # Привязываем JWT к приложению
     db.init_app(app)  # Привязываем SQLAlchemy к приложению
 
-    from app.models import User, Task
+    from .models import User, Task
 
-    from app.routes.auth import auth_blueprint
-    from app.routes.tasks import tasks_blueprint
+    from .routes.auth import auth_blueprint
+    from .routes.tasks import tasks_blueprint
 
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(tasks_blueprint)

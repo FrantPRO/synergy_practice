@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import datetime
 
-from app.models import Task, db
+from ..models import Task, db
 
 tasks_blueprint = Blueprint('tasks', __name__)
 
