@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Task Manager</h1>
+        <div class="header-buttons">
+        <a href="add-task.html" class="btn">Add Task</a>
+            <button id="logout-btn" class="btn">Logout</button>
+        </div>
+    </header>
+    <main>
+        <ul id="task-list">
+            <!-- Список задач будет динамически заполняться через JavaScript -->
+        </ul>
+    </main>
+    <div id="toast-container"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const apiUrl = 'http://127.0.0.1:5000/tasks';
+            const logoutUrl = 'http://127.0.0.1:5000/logout';
+            const taskList = document.getElementById('task-list');
+            const token = localStorage.getItem('token');
+            
+            function showToast(message) {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+            // Проверяем наличие токена
+            if (!token) {
+                showToast('You are not logged in. Redirecting to login page.');
+                window.location.href = 'login.html'; // Перенаправляем на страницу логина
+                return;
+            }
+
+            // Функция для загрузки задач
+            async function loadTasks() {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            showToast('Session expired. Please log in again.');
+                            localStorage.removeItem('token');
+                            window.location.href = 'login.html';
+                        } else {
+                            const errorData = await response.json();
+                            showToast(`Error fetching tasks: ${errorData.error}`);
+                        }
+                        return;
+                    }
+
+                    const tasks = await response.json();
+                    renderTasks(tasks);
+                } catch (error) {
+                    console.error('Error fetching tasks:', error);
+                    showToast('An error occurred while fetching tasks.');
+                }
+            }
+
+            // Функция для отображения задач
+            function renderTasks(tasks) {
+                taskList.innerHTML = ''; // Очищаем список перед обновлением
+                tasks.forEach(task => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${task.title} - ${task.description || 'No description'} (Due: ${task.due_date || 'No date'})`;
+                    taskList.appendChild(listItem);
+                });
+            }
+
+            // Функция для логаута
+            async function logout() {
+                try {
+                    const response = await fetch(logoutUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        showToast('An error occurred while logging out.');
+                        return;
+                    }
+
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                } catch (error) {
+                    console.error('Error logging out:', error);
+                    showToast('An error occurred while logging out.');
+                }
+            }
+
+            // Обработчик события для кнопки Logout
+            const logoutBtn = document.getElementById('logout-btn');
+            logoutBtn.addEventListener('click', logout);
+
+            // Загружаем задачи при загрузке страницы
+            loadTasks();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Register</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Task Manager</h1>
+    </header>
+    <main>
+        <div class="login-container">
+            <div class="tabs">
+                <button class="tab active" id="loginTab">Login</button>
+                <button class="tab" id="registerTab">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="loginForm" class="form active">
+                <label for="loginUsername">Username</label>
+                <input type="text" id="loginUsername"
+                       placeholder="Enter username" required>
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword"
+                       placeholder="Enter password" required>
+                <button type="submit">Login</button>
+            </form>
+            
+            <!-- Register Form -->
+            <form id="registerForm" class="form">
+                <label for="registerUsername">Username</label>
+                <input type="text" id="registerUsername"
+                       placeholder="Enter username" required>
+                <label for="registerPassword">Password</label>
+                <input type="password" id="registerPassword"
+                       placeholder="Enter password" required>
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </main>
+    <div id="toast-container"></div>
+    <script>
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+
+        loginTab.addEventListener('click', () => {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+            loginForm.classList.add('active');
+            registerForm.classList.remove('active');
+        });
+
+        registerTab.addEventListener('click', () => {
+            registerTab.classList.add('active');
+            loginTab.classList.remove('active');
+            registerForm.classList.add('active');
+            loginForm.classList.remove('active');
+        });
+
+        function showToast(message) {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // URL API
+        const apiUrl = 'http://127.0.0.1:5000';
+
+        // Обработчик логина
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${apiUrl}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({username, password}),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.access_token);
+                    showToast('Login successful!');
+                    window.location.href = 'index.html';
+                } else {
+                    const errorData = await response.json();
+                    showToast(`Login failed: ${errorData.error}`);
+                }
+            } catch (error) {
+                showToast('An error occurred while logging in. Please try again later.');
+            }
+        });
+
+        // Обработчик регистрации
+        registerForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+
+            try {
+                const response = await fetch(`${apiUrl}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({username, password}),
+                });
+
+                if (response.ok) {
+                    showToast('Registration successful! You can now log in.');
+                    document.getElementById('loginTab').click(); // Переключение на вкладку логина
+                } else {
+                    const errorData = await response.json();
+                    showToast(`Registration failed: ${errorData.error}`);
+                }
+            } catch (error) {
+                showToast('An error occurred while registering. Please try again later.');
+            }
+        });
+    </script>
+</body>
+</html>

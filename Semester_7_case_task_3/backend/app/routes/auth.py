@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_bcrypt import check_password_hash
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 import datetime
 
 from ..models import User
@@ -54,3 +54,11 @@ def login():
                                        expires_delta=datetime.timedelta(
                                            hours=1))
     return jsonify({'access_token': access_token}), 200
+
+@auth_blueprint.route('/logout', methods=['POST'])
+@jwt_required()
+def logout():
+    identity = get_jwt_identity()
+    if identity:
+        return jsonify({"message": "Logged out successfully"}), 200
+    return jsonify({"error": "Unauthorized"}), 401

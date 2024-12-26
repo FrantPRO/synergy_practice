@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
@@ -14,13 +15,17 @@ jwt = JWTManager()
 def create_app():
     app = Flask(__name__)
     if os.getenv("FLASK_ENV") == "test":
-        app.config.from_object('backend.app.config.Config')  # Для тестов
+        app.config.from_object('backend.app.config.Config')
     else:
-        app.config.from_object('app.config.Config')  # Для запуска приложения
+        app.config.from_object('app.config.Config')
 
-    bcrypt.init_app(app)  # Привязываем Bcrypt к приложению
-    jwt.init_app(app)  # Привязываем JWT к приложению
-    db.init_app(app)  # Привязываем SQLAlchemy к приложению
+    # Initialize extensions
+    db.init_app(app)
+    bcrypt.init_app(app)
+    jwt.init_app(app)
+
+    # Enable CORS
+    CORS(app)
 
     from .models import User, Task
 
