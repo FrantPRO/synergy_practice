@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Task Manager</h1>
+    </header>
+    <main>
+        <h2 id="page-title">Add Task</h2>
+        <form id="task-form">
+            <input type="hidden" id="task-id">
+            <label for="task-title">Title:</label>
+            <input type="text" id="task-title" placeholder="Task title"
+                   required>
+            
+            <label for="task-description">Description:</label>
+            <textarea id="task-description"
+                      placeholder="Task description"></textarea>
+            
+            <label for="task-due-date">Due Date:</label>
+            <input type="date" id="task-due-date">
+            <button type="submit" class="btn">Save Task</button>
+        </form>
+    </main>
+    <div id="toast-container"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const apiUrl = 'http://127.0.0.1:5000/tasks';
+            const taskIdInput = document.getElementById('task-id');
+            const taskTitleInput = document.getElementById('task-title');
+            const taskDescriptionInput = document.getElementById('task-description');
+            const taskDueDateInput = document.getElementById('task-due-date');
+            const pageTitle = document.getElementById('page-title');
+            const taskForm = document.getElementById('task-form');
+
+            // Проверяем, есть ли task_id в параметрах URL
+            const params = new URLSearchParams(window.location.search);
+            const taskId = params.get('task_id');
+
+            if (taskId) {
+                // Если есть task_id, переключаем страницу на режим редактирования
+                pageTitle.textContent = 'Edit Task';
+                fetch(`${apiUrl}/${taskId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Error fetching task: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(task => {
+                        taskIdInput.value = task.id;
+                        taskTitleInput.value = task.title;
+                        taskDescriptionInput.value = task.description;
+                        taskDueDateInput.value = task.due_date;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching task:', error);
+                        showToast('Failed to load task.', 'error');
+                    });
+            }
+
+            // Обработка формы
+            taskForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const taskData = {
+                    title: taskTitleInput.value,
+                    description: taskDescriptionInput.value,
+                    due_date: taskDueDateInput.value
+                };
+
+                const method = taskId ? 'PUT' : 'POST';
+                const url = taskId ? `${apiUrl}/${taskId}` : apiUrl;
+
+                fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(taskData)
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Error saving task: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(() => {
+                        showToast(taskId ? 'Task updated successfully!' : 'Task created successfully!', 'success');
+                        window.location.href = 'index.html';
+                    })
+                    .catch(error => {
+                        console.error('Error saving task:', error);
+                        showToast('Failed to save task.', 'error');
+                    });
+            });
+
+            // Функция для отображения уведомлений
+            function showToast(message, type = 'info') {
+                const toastContainer = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

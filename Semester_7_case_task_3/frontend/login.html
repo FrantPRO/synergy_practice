@@ -61,10 +61,11 @@
             loginForm.classList.remove('active');
         });
 
-        function showToast(message) {
+        // Функция для отображения уведомлений
+        function showToast(message, type = 'info') {
             const toastContainer = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = 'toast';
+            toast.className = `toast ${type}`;
             toast.textContent = message;
             toastContainer.appendChild(toast);
             setTimeout(() => {
@@ -93,14 +94,14 @@
                 if (response.ok) {
                     const data = await response.json();
                     localStorage.setItem('token', data.access_token);
-                    showToast('Login successful!');
+                    showToast('Login successful!', 'success');
                     window.location.href = 'index.html';
                 } else {
                     const errorData = await response.json();
-                    showToast(`Login failed: ${errorData.error}`);
+                    showToast(`Login failed: ${errorData.error}`, 'error');
                 }
             } catch (error) {
-                showToast('An error occurred while logging in. Please try again later.');
+                showToast('An error occurred while logging in. Please try again later.', 'error');
             }
         });
 
@@ -120,14 +121,14 @@
                 });
 
                 if (response.ok) {
-                    showToast('Registration successful! You can now log in.');
+                    showToast('Registration successful! You can now log in.', 'success');
                     document.getElementById('loginTab').click(); // Переключение на вкладку логина
                 } else {
                     const errorData = await response.json();
-                    showToast(`Registration failed: ${errorData.error}`);
+                    showToast(`Registration failed: ${errorData.error}`, 'error');
                 }
             } catch (error) {
-                showToast('An error occurred while registering. Please try again later.');
+                showToast('An error occurred while registering. Please try again later.', 'error');
             }
         });
     </script>

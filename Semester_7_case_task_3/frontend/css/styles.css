@@ -26,6 +26,10 @@ header .btn {
     border-radius: 5px;
 }
 
+header .btn:hover {
+    background: #c82333;
+}
+
 main {
     padding: 20px;
 }
@@ -130,7 +134,7 @@ button:hover {
     background-color: #145aa7;
 }
 
-
+/* Всплывающие сообщения */
 #toast-container {
     position: fixed;
     bottom: 10px;
@@ -148,6 +152,18 @@ button:hover {
     animation: fadeInOut 3s forwards;
 }
 
+.toast.success {
+    background-color: #28a745;
+}
+
+.toast.error {
+    background-color: #dc3545;
+}
+
+.toast.info {
+    background-color: #007bff;
+}
+
 @keyframes fadeInOut {
     0% {
         opacity: 0;
@@ -163,5 +179,100 @@ button:hover {
     100% {
         opacity: 0;
         transform: translateY(-10px);
+    }
+}
+
+li {
+    list-style: none;
+}
+
+.edit-btn {
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-btn:hover {
+    background-color: #145aa7;
+}
+
+.delete-btn {
+    background-color: #dc3545; /* Красный */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+#task-list {
+    padding: 0;
+    margin: 0;
+}
+
+/* Общие стили задач */
+.task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Группа кнопок для задач */
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+/* Кнопка редактирования задачи */
+.btn.edit-btn {
+    background-color: #ffc107;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn.edit-btn:hover {
+    background-color: #e0a800;
+}
+
+/* Кнопка удаления задачи */
+.btn.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn.delete-btn:hover {
+    background-color: #bd2130;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
     }
 }

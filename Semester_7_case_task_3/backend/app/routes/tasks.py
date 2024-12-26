@@ -21,6 +21,24 @@ def get_tasks():
     } for task in tasks]), 200
 
 
+@tasks_blueprint.route('/tasks/<int:task_id>', methods=['GET'])
+@jwt_required()
+def get_task(task_id):
+    user_id = get_jwt_identity()
+    task = Task.query.filter_by(id=task_id, user_id=user_id).first()
+
+    if not task:
+        return jsonify({'error': 'Task not found'}), 404
+
+    return jsonify({
+        'id': task.id,
+        'title': task.title,
+        'description': task.description,
+        'due_date': task.due_date.strftime(
+            '%Y-%m-%d') if task.due_date else None
+    }), 200
+
+
 @tasks_blueprint.route('/tasks', methods=['POST'])
 @jwt_required()
 def create_task():
