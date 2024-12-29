@@ -6,6 +6,10 @@ from alembic import context
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from app.database import Base
+from app.models.user import User
+from app.models.response import Response
+from app.models.role import Role
+from app.models.survey import Survey
 
 config = context.config
 

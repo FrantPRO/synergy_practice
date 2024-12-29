@@ -13,5 +13,5 @@ class User(Base):
     role_id = Column(Integer, ForeignKey("roles.id"), index=True)
     created_at = Column(DateTime, default=func.now())
 
-    role = relationship("Role", back_populates="users")
-    response = relationship("Response", back_populates="users")
+    role = relationship("Role", back_populates="user")
+    response = relationship("Response", back_populates="user")

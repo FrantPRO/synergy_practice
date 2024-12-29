@@ -12,4 +12,4 @@ class Survey(Base):
     questions = Column(JSON, default=list)
     created_at = Column(DateTime, default=func.now())
 
-    responses = relationship("Response", back_populates="survey")
+    response = relationship("Response", back_populates="survey")
