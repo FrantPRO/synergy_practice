@@ -15,7 +15,7 @@ ALGORITHM = "HS256"
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
 # Registration
@@ -37,7 +37,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(),
                                           user.hashed_password):
         raise HTTPException(status_code=400,
                             detail="Incorrect username or password")
-    token_data = {"sub": user.id, "role": user.role.name}
+    token_data = {"sub": str(user.id), "role": user.role.name, "name": user.username}
     token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
     return {"access_token": token, "token_type": "bearer"}
 
@@ -99,10 +99,10 @@ def create_admin_user():
             db.commit()
             db.refresh(admin_role)
 
-        admin_user = db.query(User).filter(User.username == "admin").first()
+        admin_user = db.query(User).filter(User.username == "John Smith").first()
         if not admin_user:
             admin_user = User()
-            admin_user.username = "admin"
+            admin_user.username = "John Smith"
             admin_user.hashed_password = pwd_context.hash("admin")
             admin_user.role_id = admin_role.id
             db.add(admin_user)
