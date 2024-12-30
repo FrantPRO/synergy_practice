@@ -25,3 +25,4 @@ dist/
 
 *code*.txt
 *code*.md
+node_modules/
