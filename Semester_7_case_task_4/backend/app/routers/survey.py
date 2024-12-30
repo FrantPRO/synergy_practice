@@ -19,7 +19,7 @@ def read_surveys(db: Session = Depends(get_db)):
     return surveys
 
 
-@router.post("/", dependencies=[Depends(admin)])
+@router.post("/", dependencies=[Depends(admin)], response_model=SurveyOut, status_code=201)
 def create_survey(data: SurveyCreate, db: Session = Depends(get_db)):
     survey = Survey()
     survey.name = data.name,

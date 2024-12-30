@@ -75,7 +75,7 @@ function LoginPage() {
                 }
             });
 
-            if (!response.ok) {
+            if (response.status !== 200) {
                 setSnackbar({
                     open: true,
                     message: "Server connect error",

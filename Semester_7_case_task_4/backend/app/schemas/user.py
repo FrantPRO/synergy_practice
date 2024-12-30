@@ -32,7 +32,14 @@ class UserOut(UserBase):
 
 
 class UserUpdate(UserBase):
-    role_id: int
+    role: str
+
+    class Config:
+        from_attributes = True
+
+
+class RolesOut(BaseModel):
+    name: str
 
     class Config:
         from_attributes = True

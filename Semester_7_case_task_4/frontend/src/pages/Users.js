@@ -13,12 +13,13 @@ import {
     DialogActions,
     DialogContent,
     DialogContentText,
-    DialogTitle,
+    DialogTitle, Alert,
 } from "@mui/material";
 import {Link, useNavigate} from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
+import api from "../api";
 
 function Users() {
     const [users, setUsers] = useState([]);
@@ -28,41 +29,20 @@ function Users() {
     const [currentUserId, setCurrentUserId] = useState(null);
     const navigate = useNavigate();
 
-    // Mock users data
     useEffect(() => {
-        const fakeUsers = [
-            {
-                id: 1,
-                name: "John Smith",
-                company: "Company 1",
-                role: "Admin"
-            },
-            {
-                id: 2,
-                name: "Anna Carenina",
-                company: "Company 1",
-                role: "Manager"
-            },
-            {
-                id: 3,
-                name: "Sergey Brin",
-                company: "Company 2",
-                role: "Researcher"
-            },
-            {
-                id: 4,
-                name: "Maria Magdalena",
-                company: "Company 2",
-                role: "Admin"
-            },
-            {
-                id: 5,
-                name: "San Hose",
-                company: "Company 3",
-                role: "Manager"
-            },
-        ];
-        setUsers(fakeUsers);
+        async function fetchUsers() {
+            try {
+                const response = await api.get("/users/");
+                if (response.status !== 200) {
+                    console.log("Error API response", response.statusText)
+                }
+                setUsers(response.data)
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        }
+
+        fetchUsers();
     }, []);
 
     const handleDeleteClick = (userId) => {
@@ -74,23 +54,23 @@ function Users() {
         setOpenDialog(false);
     };
 
-    const handleConfirmDelete = () => {
-        setUsers((prev) => prev.filter((user) => user.id !== currentUserId));
-        setSnackbarMessage("The user was successfully deleted.");
-        setOpenSnackbar(true);
-        setOpenDialog(false);
+    const handleConfirmDelete = async () => {
+        try {
+            await api.delete(`/users/${currentUserId}`);
+            setUsers((prev) => prev.filter((user) => user.id !== currentUserId));
+            setSnackbarMessage("The user was successfully deleted.");
+        } catch (error) {
+            console.error("Error deleting user:", error);
+            setSnackbarMessage("Failed to delete the user. Try again.");
+        } finally {
+            setOpenSnackbar(true);
+            setOpenDialog(false);
+        }
     };
 
     const handleEditClick = (userId) => {
         navigate(`/user/${userId}`);
     };
-
-    // Group users by company
-    const groupedUsers = users.reduce((acc, user) => {
-        acc[user.company] = acc[user.company] || [];
-        acc[user.company].push(user);
-        return acc;
-    }, {});
 
     return (
         <Box sx={{p: 4}}>
@@ -118,47 +98,38 @@ function Users() {
                     </Button>
                 </Tooltip>
             </Box>
-
-            {Object.entries(groupedUsers).map(([company, companyUsers]) => (
-                <Box key={company} sx={{mb: 4}}>
-                    <Typography variant="h6" gutterBottom>
-                        {company}
-                    </Typography>
-                    <List>
-                        {companyUsers.map((user) => (
-                            <ListItem
-                                key={user.id}
-                                sx={{
-                                    "&:hover": {backgroundColor: "rgba(0, 0, 0, 0.08)"},
-                                    cursor: "pointer",
-                                }}
-                                onClick={() => handleEditClick(user.id)}
-                                secondaryAction={
-                                    <>
-                                        <IconButton edge="end"
-                                                    aria-label="edit">
-                                            <EditIcon/>
-                                        </IconButton>
-                                        <IconButton edge="end"
-                                                    aria-label="delete"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleDeleteClick(user.id);
-                                                    }}
-                                        >
-                                            <DeleteIcon/>
-                                        </IconButton>
-                                    </>
-                                }
-                            >
-                                <ListItemText primary={user.name}
-                                              secondary={user.role}/>
-                            </ListItem>
-                        ))}
-                    </List>
-                </Box>
-            ))}
-
+            <List>
+                {users.map((user) => (
+                    <ListItem
+                        key={user.id}
+                        sx={{
+                            "&:hover": {backgroundColor: "rgba(0, 0, 0, 0.08)"},
+                            cursor: "pointer",
+                        }}
+                        onClick={() => handleEditClick(user.id)}
+                        secondaryAction={
+                            <>
+                                <IconButton edge="end"
+                                            aria-label="edit">
+                                    <EditIcon/>
+                                </IconButton>
+                                <IconButton edge="end"
+                                            aria-label="delete"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteClick(user.id);
+                                            }}
+                                >
+                                    <DeleteIcon/>
+                                </IconButton>
+                            </>
+                        }
+                    >
+                        <ListItemText primary={user.username}
+                                      secondary={user.role}/>
+                    </ListItem>
+                ))}
+            </List>
             <Snackbar
                 open={openSnackbar}
                 autoHideDuration={3000}

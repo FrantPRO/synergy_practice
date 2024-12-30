@@ -7,7 +7,7 @@ from passlib.context import CryptContext
 from ..database import get_db
 from ..models.role import Role
 from ..models.user import User
-from ..schemas.user import UserCreate, UserOut, UserUpdate
+from ..schemas.user import UserCreate, UserOut, UserUpdate, RolesOut
 
 router = APIRouter(prefix="/users", tags=["Users"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -18,6 +18,14 @@ def read_users(db: Session = Depends(get_db)):
     users = db.query(User).all()
     return [UserOut.from_orm_with_role(user) for user in users]
 
+
+@router.get("/roles", response_model=List[RolesOut])
+def read_users_roles(db: Session = Depends(get_db)):
+    return db.query(Role.name).distinct().all()
+
+@router.post("/", response_model=UserOut, status_code=201)
+def read_users(data: UserCreate, db: Session = Depends(get_db)):
+    return UserOut.from_orm_with_role(create_user(data, db))
 
 @router.get("/{user_id}", response_model=UserOut)
 def get_user(user_id: int, db: Session = Depends(get_db)):
@@ -34,8 +42,8 @@ def update_user(user_id: int, user_data: UserUpdate,
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    for key, value in user_data.dict(exclude_unset=True).items():
-        setattr(user, key, value)
+    user.username = user_data.username
+    user.role = db.query(Role).filter(Role.name == user_data.role).first()
 
     db.commit()
     db.refresh(user)
@@ -61,7 +69,15 @@ def get_user_by_id(db: Session, id: int):
     return db.query(User).filter(User.username == id).first()
 
 
-def create_user(db: Session, user: UserCreate):
+def create_user(user: UserCreate, db: Session):
+    existing_user = db.query(User).filter(
+        User.username == user.username).first()
+    if existing_user:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Username '{user.username}' is already taken."
+        )
+
     db_user = User()
     db_user.username = user.username
     db_user.hashed_password = pwd_context.hash(user.password)

@@ -25,7 +25,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400,
                             detail="Username already registered")
-    return create_user(db, user)
+    return create_user(user, db)
 
 
 # Login
@@ -99,10 +99,10 @@ def create_admin_user():
             db.commit()
             db.refresh(admin_role)
 
-        admin_user = db.query(User).filter(User.username == "John Smith").first()
+        admin_user = db.query(User).filter(User.username == "admin").first()
         if not admin_user:
             admin_user = User()
-            admin_user.username = "John Smith"
+            admin_user.username = "admin"
             admin_user.hashed_password = pwd_context.hash("admin")
             admin_user.role_id = admin_role.id
             db.add(admin_user)
