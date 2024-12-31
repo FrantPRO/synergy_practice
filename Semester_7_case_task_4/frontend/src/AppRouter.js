@@ -17,43 +17,97 @@ import ChartsPage from "./pages/ChartsPage";
 import User from "./pages/User";
 import styles from "./styles/appRouterStyles";
 
-function RequireAuth({children}) {
+function RequireAuth({children, role}) {
     const token = localStorage.getItem("access_token");
+    const userRole = localStorage.getItem("user_role");
     const location = useLocation();
 
     if (!token) {
-        return <Navigate to="/login" state={{from: location.pathname}}/>; // Сохраняем путь
+        return <Navigate to="/login" state={{from: location.pathname}}/>;
+    }
+
+    if (role && userRole !== role) {
+        return <Navigate to="/"/>;
     }
 
     return children;
+}
+
+function ProtectedLayout({children}) {
+    return (
+        <>
+            <Header/>
+            <main style={styles.wrapper}>{children}</main>
+            <Footer/>
+        </>
+    );
 }
 
 function AppRouter() {
     return (
         <Router>
             <Routes>
-                {/* Публичный маршрут для авторизации */}
+                {/* Public routes */}
                 <Route path="/login" element={<LoginPage/>}/>
 
-                {/* Все защищённые маршруты */}
+                {/* Protected routes */}
                 <Route
-                    path="*"
+                    path="/"
                     element={
                         <RequireAuth>
-                            <>
-                                <Header/>
-                                <main style={styles.wrapper}>
-                                    <Routes>
-                                        <Route path="/" element={<Home/>}/>
-                                        <Route path="/experiment/:id?" element={<Experiment/>}/>
-                                        <Route path="/analytics" element={<Analytics/>}/>
-                                        <Route path="/users" element={<Users/>}/>
-                                        <Route path="/user/:id?" element={<User/>}/>
-                                        <Route path="/charts/:experimentId" element={<ChartsPage/>}/>
-                                    </Routes>
-                                </main>
-                                <Footer/>
-                            </>
+                            <ProtectedLayout>
+                                <Home/>
+                            </ProtectedLayout>
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/analytics"
+                    element={
+                        <RequireAuth>
+                            <ProtectedLayout>
+                                <Analytics/>
+                            </ProtectedLayout>
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/charts/:experimentId"
+                    element={
+                        <RequireAuth>
+                            <ProtectedLayout>
+                                <ChartsPage/>
+                            </ProtectedLayout>
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/experiment/:id?"
+                    element={
+                        <RequireAuth role="admin">
+                            <ProtectedLayout>
+                                <Experiment/>
+                            </ProtectedLayout>
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/users"
+                    element={
+                        <RequireAuth role="admin">
+                            <ProtectedLayout>
+                                <Users/>
+                            </ProtectedLayout>
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/user/:id?"
+                    element={
+                        <RequireAuth role="admin">
+                            <ProtectedLayout>
+                                <User/>
+                            </ProtectedLayout>
                         </RequireAuth>
                     }
                 />
