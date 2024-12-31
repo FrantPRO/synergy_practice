@@ -10,7 +10,7 @@
         "build": "webpack --mode production"
     },
     "keywords": [],
-    "author": "",
+    "author": "Frantsuzov Stanislav",
     "license": "ISC",
     "dependencies": {
         "@emotion/react": "^11.13.5",

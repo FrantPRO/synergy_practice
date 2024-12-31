@@ -110,10 +110,6 @@ function Users() {
                         secondaryAction={
                             <>
                                 <IconButton edge="end"
-                                            aria-label="edit">
-                                    <EditIcon/>
-                                </IconButton>
-                                <IconButton edge="end"
                                             aria-label="delete"
                                             onClick={(e) => {
                                                 e.stopPropagation();

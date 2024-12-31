@@ -23,10 +23,6 @@ function getUserInfoFromToken(token) {
 }
 
 function LoginPage() {
-    const [credentials, setCredentials] = useState({
-        username: "",
-        password: ""
-    });
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: "",
@@ -37,31 +33,6 @@ function LoginPage() {
 
     const navigate = useNavigate();
     const location = useLocation();
-
-    const handleLoginMock = async (event) => {
-        event.preventDefault();
-        try {
-            // Заглушка для авторизации
-            if (username && password) {
-                const access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gU21pdGgiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE1MTYyMzkwMjJ9.y2gYAN4QvRrNNYT0-lMgRfAz7TFPvxhbNRYKXe-2NwM";
-                localStorage.setItem("access_token", access_token);
-                const userInfo = getUserInfoFromToken(access_token);
-                localStorage.setItem("user_name", userInfo.name);
-                localStorage.setItem("user_role", userInfo.role);
-
-                const redirectTo = location.state?.from || "/";
-                navigate(redirectTo);
-            } else {
-                throw new Error("Name and password are required");
-            }
-        } catch (error) {
-            setSnackbar({
-                open: true,
-                message: error.message,
-                severity: "error"
-            });
-        }
-    };
 
     const handleLogin = async (event) => {
         event.preventDefault();

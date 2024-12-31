@@ -19,6 +19,7 @@ import {Link, useNavigate} from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import ProgressButton from "../components/ProgressButton";
 import api from "../api";
 import StatusModal from "../components/StatusModal";
@@ -35,12 +36,15 @@ const Home = () => {
     const [selectedSurveyId, setSelectedSurveyId] = useState(null);
     const navigate = useNavigate();
 
+    const userRole = localStorage.getItem("user_role");
+
     // Fetch surveys from API
     useEffect(() => {
         const storedUserName = localStorage.getItem("user_name");
         if (storedUserName) {
             setUsername(storedUserName);
         }
+
         async function fetchSurveys() {
             try {
                 const response = await api.get("/surveys/");
@@ -98,6 +102,10 @@ const Home = () => {
         setStatusModalOpen(true);
     };
 
+    const handleStartSurvey = (surveyId) => {
+        // TODO: create a page to complete the survey
+    }
+
     return (
         <Box sx={styles.container}>
             {/* Servey Section */}
@@ -113,17 +121,19 @@ const Home = () => {
                     <Typography variant="h4" gutterBottom>
                         Welcome {username}!
                     </Typography>
-                    <Tooltip title="Create a new survey">
-                        <Button
-                            variant="contained"
-                            startIcon={<AddIcon/>}
-                            component={Link}
-                            to="/survey"
-                            sx={{mb: 2}}
-                        >
-                            New survey
-                        </Button>
-                    </Tooltip>
+                    {userRole === "admin" && (
+                        <Tooltip title="Create a new survey">
+                            <Button
+                                variant="contained"
+                                startIcon={<AddIcon/>}
+                                component={Link}
+                                to="/survey"
+                                sx={{mb: 2}}
+                            >
+                                New survey
+                            </Button>
+                        </Tooltip>
+                    )}
                 </Box>
 
                 {surveys.length === 0 ? (
@@ -131,18 +141,22 @@ const Home = () => {
                         <Typography variant="h6" color="textSecondary">
                             No surveys found
                         </Typography>
-                        <Typography variant="body2" color="textSecondary"
-                                    sx={{mb: 2}}>
-                            You can create a new survey to get started.
-                        </Typography>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<AddIcon/>}
-                            onClick={() => navigate("/survey")}
-                        >
-                            Create Survey
-                        </Button>
+                        {userRole === "admin" && (
+                            <Typography variant="body2" color="textSecondary"
+                                        sx={{mb: 2}}>
+                                You can create a new survey to get started.
+                            </Typography>
+                        )}
+                        {userRole === "admin" && (
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={<AddIcon/>}
+                                onClick={() => navigate("/survey")}
+                            >
+                                Create Survey
+                            </Button>
+                        )}
                     </Box>
                 ) : (
                     <List>
@@ -175,20 +189,32 @@ const Home = () => {
                                             handleProgressButtonClick(survey.stages)
                                         }
                                     />
-                                    <IconButton
-                                        edge="end"
-                                        aria-label="edit"
-                                        onClick={() => handleEditClick(survey.id)}
-                                    >
-                                        <EditIcon/>
-                                    </IconButton>
-                                    <IconButton
-                                        edge="end"
-                                        aria-label="delete"
-                                        onClick={() => handleDeleteClick(survey.id)}
-                                    >
-                                        <DeleteIcon/>
-                                    </IconButton>
+                                    {userRole === "admin" ? (
+                                        <IconButton
+                                            edge="end"
+                                            aria-label="edit"
+                                            onClick={() => handleEditClick(survey.id)}
+                                        >
+                                            <EditIcon/>
+                                        </IconButton>
+                                    ) : (
+                                        <IconButton
+                                            edge="end"
+                                            aria-label="start"
+                                            onClick={() => handleStartSurvey(survey.id)}
+                                        >
+                                            <RocketLaunchIcon/>
+                                        </IconButton>
+                                    )}
+                                    {userRole === "admin" && (
+                                        <IconButton
+                                            edge="end"
+                                            aria-label="delete"
+                                            onClick={() => handleDeleteClick(survey.id)}
+                                        >
+                                            <DeleteIcon/>
+                                        </IconButton>
+                                    )}
                                 </Box>
                             </ListItem>
                         ))}

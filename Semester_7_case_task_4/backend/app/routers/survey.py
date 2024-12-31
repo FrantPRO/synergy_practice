@@ -13,7 +13,7 @@ from ..schemas.survey import SurveyCreate, SurveyUpdate, SurveyOut
 router = APIRouter(prefix="/surveys", tags=["Surveys"])
 
 
-@router.get("/", response_model=List[SurveyOut], dependencies=[Depends(admin)])
+@router.get("/", response_model=List[SurveyOut])
 def read_surveys(db: Session = Depends(get_db)):
     surveys = db.query(Survey).all()
     return surveys
