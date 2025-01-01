@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import exists, and_
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
@@ -37,7 +38,8 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(),
                                           user.hashed_password):
         raise HTTPException(status_code=400,
                             detail="Incorrect username or password")
-    token_data = {"sub": str(user.id), "role": user.role.name, "name": user.username}
+    token_data = {"sub": str(user.id), "role": user.role.name,
+                  "name": user.username}
     token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
     return {"access_token": token, "token_type": "bearer"}
 
@@ -87,6 +89,17 @@ def admin(token: str = Depends(oauth2_scheme)):
                                 detail="Not enough permissions")
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
+
+
+def is_user_admin(user_id: int, db: Session) -> bool:
+    return db.query(
+        exists().where(
+            and_(
+                User.id == user_id,
+                User.role.has(Role.name == 'admin')
+            )
+        )
+    ).scalar()
 
 
 def create_admin_user():

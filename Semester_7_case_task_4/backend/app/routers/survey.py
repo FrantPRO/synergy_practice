@@ -3,11 +3,9 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from .auth import get_user_id, admin
+from .auth import admin
 from ..database import get_db
-from ..models.response import Response
 from ..models.survey import Survey
-from ..schemas.response import ResponseSchema
 from ..schemas.survey import SurveyCreate, SurveyUpdate, SurveyOut
 
 router = APIRouter(prefix="/surveys", tags=["Surveys"])
@@ -64,41 +62,3 @@ def delete_survey(survey_id: int, db: Session = Depends(get_db)):
     db.delete(survey)
     db.commit()
     return
-
-
-@router.get("/{survey_id}/responses", response_model=List[ResponseSchema])
-def read_survey_responses(survey_id: int, db: Session = Depends(get_db),
-                          user_id: int = Depends(get_user_id)):
-    survey_responses = (
-        db.query(Response.response)
-        .filter(Response.survey_id == survey_id)
-        .filter(Response.user_id == user_id)
-        .all()
-    )
-    return [r[0] for r in survey_responses]
-
-
-@router.get("/{survey_id}/responses/{response_id}",
-            response_model=ResponseSchema)
-def read_survey_responses(survey_id: int, response_id: int,
-                          db: Session = Depends(get_db)):
-    response = db.query(Response).filter(Response.id == response_id).first()
-    return response
-
-
-@router.post("/{survey_id}/responses", response_model=ResponseSchema)
-def create_survey_responses(
-    survey_id: int,
-    response_data: ResponseSchema,
-    db: Session = Depends(get_db),
-    user_id: int = Depends(get_user_id)
-):
-    response = Response()
-    response.survey_id = survey_id
-    response.user_id = user_id
-    response.response = response_data.model_dump(exclude_unset=True)
-
-    db.add(response)
-    db.commit()
-    db.refresh(response)
-    return response
