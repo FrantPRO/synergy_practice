@@ -18,9 +18,9 @@ import {
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, PointElement, ArcElement, LineElement, RadialLinearScale);
 
 function ChartsPage() {
-    const {experimentId} = useParams(); // Получаем ID эксперимента
-    const location = useLocation(); // Получаем переданные данные
-    const chartData = location.state?.chartData; // Извлекаем chartData из state
+    const {surveyId} = useParams();
+    const location = useLocation();
+    const chartData = location.state?.chartData;
 
     if (!chartData) {
         return (
@@ -35,7 +35,7 @@ function ChartsPage() {
     return (
         <Box sx={{p: 4}}>
             <Typography variant="h4" mb={4}>
-                Graphs for the experiment {experimentId}
+                Graphs for the survey {surveyId}
             </Typography>
             <Grid container spacing={4}>
                 {/* Первый график: Бар */}

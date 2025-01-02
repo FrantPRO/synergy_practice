@@ -17,10 +17,7 @@ import {
 } from "@mui/material";
 import {Link, useNavigate} from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import ProgressButton from "../components/ProgressButton";
 import api from "../api";
 import StatusModal from "../components/StatusModal";
 import styles from "../styles/HomePageStyles";
@@ -34,11 +31,11 @@ const Home = () => {
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedSurveyId, setSelectedSurveyId] = useState(null);
+    const [userResponses, setUserResponses] = useState([]);
     const navigate = useNavigate();
 
     const userRole = localStorage.getItem("user_role");
 
-    // Fetch surveys from API
     useEffect(() => {
         const storedUserName = localStorage.getItem("user_name");
         if (storedUserName) {
@@ -64,8 +61,23 @@ const Home = () => {
             }
         }
 
+        async function fetchUserResponses() {
+            try {
+                const userId = localStorage.getItem("user_id"); // Предположим, что ID пользователя хранится в localStorage
+                const response = await api.get(`/responses?user_id=${userId}`);
+                setUserResponses(response.data);
+            } catch (error) {
+                console.error("Error fetching user responses:", error);
+            }
+        }
+
         fetchSurveys();
+        fetchUserResponses();
     }, []);
+
+    const hasUserResponded = (surveyId) => {
+        return userResponses.some((response) => response.survey_id === surveyId);
+    };
 
     const handleDeleteClick = (surveyId) => {
         setSelectedSurveyId(surveyId);
@@ -94,21 +106,20 @@ const Home = () => {
     };
 
     const handleEditClick = (surveyId) => {
-        navigate(`/survey/${surveyId}`);
+        if (userRole === 'admin') {
+            navigate(`/survey/${surveyId}`);
+        } else {
+            if (hasUserResponded(surveyId)) {
+                setSnackbarMessage("You have already responded to this survey!");
+                setOpenSnackbar(true);
+            } else {
+                navigate(`/response/${surveyId}`);
+            }
+        }
     };
-
-    const handleProgressButtonClick = (stages) => {
-        setCurrentStages(stages);
-        setStatusModalOpen(true);
-    };
-
-    const handleStartSurvey = (surveyId) => {
-        // TODO: create a page to complete the survey
-    }
 
     return (
         <Box sx={styles.container}>
-            {/* Servey Section */}
             <Box sx={styles.surveysSection}>
                 <Box
                     sx={{
@@ -164,58 +175,49 @@ const Home = () => {
                             <ListItem
                                 key={survey.id}
                                 sx={{
-                                    "&:hover": {
-                                        backgroundColor: "rgba(0, 0, 0, 0.08)",
-                                    },
+                                    "&:hover": {backgroundColor: "rgba(0, 0, 0, 0.08)"},
                                     display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
+                                    cursor: userRole === 'admin' || !hasUserResponded(survey.id) ? "pointer" : "default", // Админ всегда может редактировать
+                                    opacity: userRole === 'admin' ? 1 : hasUserResponded(survey.id) ? 0.6 : 1, // Админ видит все опросники без затемнения
                                 }}
+                                onClick={() => {
+                                    if (userRole === 'admin' || !hasUserResponded(survey.id)) {
+                                        handleEditClick(survey.id);
+                                    }
+                                }} // Админ всегда может редактировать
+                                secondaryAction={
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 2,
+                                        }}
+                                    >
+                                        {userRole !== 'admin' && hasUserResponded(survey.id) && (
+                                            <Typography variant="body2"
+                                                        color="success.main">
+                                                Completed
+                                            </Typography>
+                                        )}
+                                        {userRole === "admin" && (
+                                            <IconButton
+                                                edge="end"
+                                                aria-label="delete"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteClick(survey.id);
+                                                }}
+                                            >
+                                                <DeleteIcon/>
+                                            </IconButton>
+                                        )}
+                                    </Box>
+                                }
                             >
                                 <ListItemText
                                     primary={survey.name}
                                     secondary={survey.description}
                                 />
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: 2,
-                                    }}
-                                >
-                                    <ProgressButton
-                                        value={survey.status}
-                                        onClick={() =>
-                                            handleProgressButtonClick(survey.stages)
-                                        }
-                                    />
-                                    {userRole === "admin" ? (
-                                        <IconButton
-                                            edge="end"
-                                            aria-label="edit"
-                                            onClick={() => handleEditClick(survey.id)}
-                                        >
-                                            <EditIcon/>
-                                        </IconButton>
-                                    ) : (
-                                        <IconButton
-                                            edge="end"
-                                            aria-label="start"
-                                            onClick={() => handleStartSurvey(survey.id)}
-                                        >
-                                            <RocketLaunchIcon/>
-                                        </IconButton>
-                                    )}
-                                    {userRole === "admin" && (
-                                        <IconButton
-                                            edge="end"
-                                            aria-label="delete"
-                                            onClick={() => handleDeleteClick(survey.id)}
-                                        >
-                                            <DeleteIcon/>
-                                        </IconButton>
-                                    )}
-                                </Box>
                             </ListItem>
                         ))}
                     </List>

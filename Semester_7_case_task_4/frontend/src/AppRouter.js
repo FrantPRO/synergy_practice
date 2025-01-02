@@ -8,7 +8,8 @@ import {
 } from 'react-router-dom';
 import LoginPage from "./pages/LoginPage";
 import Home from './pages/Home';
-import Experiment from './pages/Experiment';
+import Survey from './pages/Survey';
+import SurveyResponse from './pages/SurveyResponse';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Analytics from './pages/Analytics';
@@ -72,7 +73,7 @@ function AppRouter() {
                     }
                 />
                 <Route
-                    path="/charts/:experimentId"
+                    path="/charts/:surveyId"
                     element={
                         <RequireAuth>
                             <ProtectedLayout>
@@ -82,11 +83,21 @@ function AppRouter() {
                     }
                 />
                 <Route
-                    path="/experiment/:id?"
+                    path="/response/:surveyId"
+                    element={
+                        <RequireAuth>
+                            <ProtectedLayout>
+                                <SurveyResponse/>
+                            </ProtectedLayout>
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/survey/:id?"
                     element={
                         <RequireAuth role="admin">
                             <ProtectedLayout>
-                                <Experiment/>
+                                <Survey/>
                             </ProtectedLayout>
                         </RequireAuth>
                     }

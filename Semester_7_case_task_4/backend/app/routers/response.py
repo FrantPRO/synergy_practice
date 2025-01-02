@@ -17,8 +17,8 @@ def read_responses(
     db: Session = Depends(get_db),
     user_id: int = Depends(get_user_id)
 ):
-    if is_user_admin(user_id):
-        responses = db.query(Survey).all()
+    if is_user_admin(user_id, db):
+        responses = db.query(Response).all()
     else:
         responses = (
             db.query(Response)
@@ -39,7 +39,7 @@ def read_response(
         raise HTTPException(status_code=404, detail="Response not found")
 
     # Проверяем права доступа
-    if not is_user_admin(user_id) and response.user_id != user_id:
+    if not is_user_admin(user_id, db) and response.user_id != user_id:
         raise HTTPException(
             status_code=403,
             detail="Not authorized to access this response"

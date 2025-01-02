@@ -104,6 +104,7 @@ function Users() {
                         key={user.id}
                         sx={{
                             "&:hover": {backgroundColor: "rgba(0, 0, 0, 0.08)"},
+                            display: "flex",
                             cursor: "pointer",
                         }}
                         onClick={() => handleEditClick(user.id)}
