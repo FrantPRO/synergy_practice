@@ -13,7 +13,7 @@ import {
     DialogActions,
     DialogContent,
     DialogContentText,
-    DialogTitle, Alert,
+    DialogTitle, Alert, CircularProgress,
 } from "@mui/material";
 import {Link, useNavigate} from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -23,6 +23,8 @@ import styles from "../styles/HomePageStyles";
 
 function Users() {
     const [users, setUsers] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [openDialog, setOpenDialog] = useState(false);
@@ -33,12 +35,12 @@ function Users() {
         async function fetchUsers() {
             try {
                 const response = await api.get("/users/");
-                if (response.status !== 200) {
-                    console.log("Error API response", response.statusText)
-                }
                 setUsers(response.data)
             } catch (error) {
                 console.error("Error fetching users:", error);
+                setError(error.message);
+            } finally {
+                setIsLoading(false);
             }
         }
 
@@ -71,6 +73,22 @@ function Users() {
     const handleEditClick = (userId) => {
         navigate(`/user/${userId}`);
     };
+
+    if (isLoading) {
+        return (
+            <Box sx={styles.container}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (error) {
+        return (
+            <Box sx={styles.container}>
+                <Alert severity="error">{error}</Alert>
+            </Box>
+        );
+    }
 
     return (
         <Box sx={styles.container}>

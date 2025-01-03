@@ -1,9 +1,12 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:8000", // Адрес бэкенда
+    baseURL: "http://localhost:8000",
     headers: {
         "Content-Type": "application/json",
+    },
+    validateStatus: function (status) {
+        return status < 400;
     },
 });
 

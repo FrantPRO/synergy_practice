@@ -14,7 +14,7 @@ import api from "../api";
 function ResponseDetails() {
     const {id} = useParams();
     const navigate = useNavigate();
-    const [response, setResponse] = useState(null);
+    const [response, setResponse] = useState([]);
     const [loading, setLoading] = useState(true);
     const [snackbar, setSnackbar] = useState({
         open: false,
@@ -25,16 +25,12 @@ function ResponseDetails() {
     useEffect(() => {
         async function fetchResponse() {
             try {
-                const response = await api.get(`/responses/${id}`);
-                setResponse(response.data)
+                const resp = await api.get(`/responses/${id}`);
+                setResponse(resp.data)
                 setLoading(false);
             } catch (error) {
-                setSnackbar({
-                    open: true,
-                    message: "Failed to load survey.",
-                    severity: "error",
-                });
                 setLoading(false);
+                navigate("/analytics")
             }
         }
 

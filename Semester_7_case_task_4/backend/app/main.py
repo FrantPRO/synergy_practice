@@ -36,7 +36,7 @@ app.add_middleware(
 app.include_router(surveys_router, dependencies=[Depends(authentication)])
 app.include_router(auth_router)
 app.include_router(user_router, dependencies=[Depends(admin)])
-app.include_router(responses_router, dependencies=[Depends(authentication)])
+app.include_router(responses_router)
 
 def main():
     import uvicorn
@@ -44,7 +44,8 @@ def main():
         "app.main:app",
         host="0.0.0.0",
         port=8000,
-        log_level="info",
+        # log_level="info",
+        log_level="debug",
         reload=True,
     )
 

@@ -11,15 +11,18 @@ import {
     MenuItem,
     FormControl,
     InputLabel,
-    IconButton,
+    IconButton, CircularProgress,
 } from "@mui/material";
 import {useForm, FormProvider, useFieldArray} from "react-hook-form";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import api from "../api";
+import styles from "../styles/HomePageStyles";
 
 function Survey() {
     const {id} = useParams();
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
     const [snackbar, setSnackbar] = useState({
         open: false,
@@ -54,6 +57,9 @@ function Survey() {
                         message: "Failed to retrieve survey information.",
                         severity: "error",
                     });
+                    setError(error.message);
+                } finally {
+                    setIsLoading(false);
                 }
             }
 
@@ -113,6 +119,22 @@ function Survey() {
     const handleOptionsChange = (index, options) => {
         methods.setValue(`questions.${index}.options`, options);
     };
+
+    if (isLoading) {
+        return (
+            <Box sx={styles.container}>
+                <CircularProgress/>
+            </Box>
+        );
+    }
+
+    if (error) {
+        return (
+            <Box sx={styles.container}>
+                <Alert severity="error">{error}</Alert>
+            </Box>
+        );
+    }
 
     return (
         <FormProvider {...methods}>

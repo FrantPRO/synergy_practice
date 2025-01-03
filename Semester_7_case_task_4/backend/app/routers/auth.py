@@ -68,7 +68,7 @@ def get_user_id(token: str = Depends(oauth2_scheme)) -> int:
         if user_id is None:
             raise HTTPException(status_code=401,
                                 detail="Invalid authentication credentials")
-        return user_id
+        return int(user_id)
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 

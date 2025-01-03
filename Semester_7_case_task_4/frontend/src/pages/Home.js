@@ -24,7 +24,6 @@ import styles from "../styles/HomePageStyles";
 
 const Home = () => {
     const [surveys, setSurveys] = useState([]);
-    const [username, setUsername] = useState("");
     const [currentStages, setCurrentStages] = useState([]);
     const [isStatusModalOpen, setStatusModalOpen] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -37,11 +36,6 @@ const Home = () => {
     const userRole = localStorage.getItem("user_role");
 
     useEffect(() => {
-        const storedUserName = localStorage.getItem("user_name");
-        if (storedUserName) {
-            setUsername(storedUserName);
-        }
-
         async function fetchSurveys() {
             try {
                 const response = await api.get("/surveys/");
@@ -63,7 +57,7 @@ const Home = () => {
 
         async function fetchUserResponses() {
             try {
-                const userId = localStorage.getItem("user_id"); // Предположим, что ID пользователя хранится в localStorage
+                const userId = localStorage.getItem("user_id");
                 const response = await api.get(`/responses?user_id=${userId}`);
                 setUserResponses(response.data);
             } catch (error) {

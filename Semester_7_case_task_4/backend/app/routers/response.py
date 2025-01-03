@@ -3,13 +3,17 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from .auth import get_user_id, admin, is_user_admin
+from .auth import get_user_id, admin, is_user_admin, authentication
 from ..database import get_db
 from ..models.response import Response
 from ..models.survey import Survey
 from ..schemas.response import ResponseOut, ResponseCreate
 
-router = APIRouter(prefix="/responses", tags=["Responses"])
+router = APIRouter(
+    prefix="/responses",
+    tags=["Responses"],
+    dependencies=[Depends(authentication)],
+)
 
 
 @router.get("/", response_model=List[ResponseOut])
@@ -34,18 +38,17 @@ def read_response(
     db: Session = Depends(get_db),
     user_id: int = Depends(get_user_id)
 ):
-    response = db.query(Response).filter(Response.id == response_id).first()
-    if not response:
+    resp = db.query(Response).filter(Response.id == response_id).first()
+    if not resp:
         raise HTTPException(status_code=404, detail="Response not found")
 
-    # Проверяем права доступа
-    if not is_user_admin(user_id, db) and response.user_id != user_id:
+    if not is_user_admin(user_id, db) and resp.user_id != user_id:
         raise HTTPException(
             status_code=403,
             detail="Not authorized to access this response"
         )
 
-    return response
+    return resp
 
 
 @router.post("/{survey_id}", response_model=ResponseOut)

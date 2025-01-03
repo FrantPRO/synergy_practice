@@ -5,16 +5,20 @@ import {
     ListItem,
     ListItemText,
     Tooltip,
-    IconButton, Typography, Button,
+    IconButton,
+    Typography,
+    CircularProgress,
+    Alert,
 } from "@mui/material";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import InsightsOutlinedIcon from "@mui/icons-material/InsightsOutlined";
 import api from "../api";
 import styles from "../styles/HomePageStyles";
-import AddIcon from "@mui/icons-material/Add";
 
 function Analytics() {
     const [responses, setResponses] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     const userRole = localStorage.getItem("user_role");
     const navigate = useNavigate();
 
@@ -22,12 +26,12 @@ function Analytics() {
         async function fetchResponses() {
             try {
                 const resp = await api.get("/responses/");
-                if (resp.status !== 200) {
-                    console.log("Error API response", resp.statusText)
-                }
-                setResponses(resp.data)
+                setResponses(resp.data);
             } catch (error) {
-                console.error("Error fetching users:", error);
+                console.error("Error fetching responses:", error);
+                setError(error.message);
+            } finally {
+                setIsLoading(false);
             }
         }
 
@@ -40,6 +44,22 @@ function Analytics() {
 
     const handleEditClick = (responseId) => {
         navigate(`/responses/${responseId}`);
+    };
+
+    if (isLoading) {
+        return (
+            <Box sx={styles.container}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (error) {
+        return (
+            <Box sx={styles.container}>
+                <Alert severity="error">{error}</Alert>
+            </Box>
+        );
     }
 
     return (
