@@ -1,6 +1,6 @@
 #!make
 -include .env
-.PHONY: prompt prompt_bundle setup
+.PHONY: setup code
 
 DB_NAME ?= $(DB_NAME)
 DB_USER ?= $(DB_USER)
@@ -19,3 +19,7 @@ setup:
 	# Выполнение миграций
 	source ~/Projects/SynergyPractice/.venv/bin/activate && \
 	alembic -c ~/Projects/SynergyPractice/Semester_7_case_task_4/backend/alembic.ini upgrade head
+
+
+code:
+	code2prompt . --exclude="*-lock.json,*.svg" -o code.md
