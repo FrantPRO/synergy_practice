@@ -129,8 +129,8 @@ const Home = () => {
                         mb: 4,
                     }}
                 >
-                    <Typography variant="h4" gutterBottom>
-                        Welcome {username}!
+                    <Typography variant="h5" gutterBottom>
+                        Surveys
                     </Typography>
                     {userRole === "admin" && (
                         <Tooltip title="Create a new survey">
@@ -177,14 +177,14 @@ const Home = () => {
                                 sx={{
                                     "&:hover": {backgroundColor: "rgba(0, 0, 0, 0.08)"},
                                     display: "flex",
-                                    cursor: userRole === 'admin' || !hasUserResponded(survey.id) ? "pointer" : "default", // Админ всегда может редактировать
-                                    opacity: userRole === 'admin' ? 1 : hasUserResponded(survey.id) ? 0.6 : 1, // Админ видит все опросники без затемнения
+                                    cursor: userRole === 'admin' || !hasUserResponded(survey.id) ? "pointer" : "default",
+                                    opacity: userRole === 'admin' ? 1 : hasUserResponded(survey.id) ? 0.6 : 1,
                                 }}
                                 onClick={() => {
                                     if (userRole === 'admin' || !hasUserResponded(survey.id)) {
                                         handleEditClick(survey.id);
                                     }
-                                }} // Админ всегда может редактировать
+                                }}
                                 secondaryAction={
                                     <Box
                                         sx={{

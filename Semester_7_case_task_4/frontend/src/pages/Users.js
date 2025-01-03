@@ -17,9 +17,9 @@ import {
 } from "@mui/material";
 import {Link, useNavigate} from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import api from "../api";
+import styles from "../styles/HomePageStyles";
 
 function Users() {
     const [users, setUsers] = useState([]);
@@ -73,60 +73,62 @@ function Users() {
     };
 
     return (
-        <Box sx={{p: 4}}>
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mb: 4,
-                }}
-            >
-                <Typography variant="h4" gutterBottom>
-                    Users
-                </Typography>
+        <Box sx={styles.container}>
+            <Box sx={styles.surveysSection}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 4,
+                    }}
+                >
+                    <Typography variant="h5" gutterBottom>
+                        Users
+                    </Typography>
 
-                <Tooltip title="Create a new user">
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon/>}
-                        component={Link}
-                        to="/user/new"
-                        sx={{mb: 2}}
-                    >
-                        New user
-                    </Button>
-                </Tooltip>
+                    <Tooltip title="Create a new user">
+                        <Button
+                            variant="contained"
+                            startIcon={<AddIcon/>}
+                            component={Link}
+                            to="/user/new"
+                            sx={{mb: 2}}
+                        >
+                            New user
+                        </Button>
+                    </Tooltip>
+                </Box>
+                <List>
+                    {users.map((user) => (
+                        <ListItem
+                            key={user.id}
+                            sx={{
+                                "&:hover": {backgroundColor: "rgba(0, 0, 0, 0.08)"},
+                                display: "flex",
+                                cursor: "pointer",
+                            }}
+                            onClick={() => handleEditClick(user.id)}
+                            secondaryAction={
+                                <>
+                                    <IconButton edge="end"
+                                                aria-label="delete"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteClick(user.id);
+                                                }}
+                                    >
+                                        <DeleteIcon/>
+                                    </IconButton>
+                                </>
+                            }
+                        >
+                            <ListItemText primary={user.username}
+                                          secondary={user.role}/>
+                        </ListItem>
+                    ))}
+                </List>
             </Box>
-            <List>
-                {users.map((user) => (
-                    <ListItem
-                        key={user.id}
-                        sx={{
-                            "&:hover": {backgroundColor: "rgba(0, 0, 0, 0.08)"},
-                            display: "flex",
-                            cursor: "pointer",
-                        }}
-                        onClick={() => handleEditClick(user.id)}
-                        secondaryAction={
-                            <>
-                                <IconButton edge="end"
-                                            aria-label="delete"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleDeleteClick(user.id);
-                                            }}
-                                >
-                                    <DeleteIcon/>
-                                </IconButton>
-                            </>
-                        }
-                    >
-                        <ListItemText primary={user.username}
-                                      secondary={user.role}/>
-                    </ListItem>
-                ))}
-            </List>
             <Snackbar
                 open={openSnackbar}
                 autoHideDuration={3000}

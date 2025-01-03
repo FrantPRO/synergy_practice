@@ -16,6 +16,7 @@ import Analytics from './pages/Analytics';
 import Users from './pages/Users';
 import ChartsPage from "./pages/ChartsPage";
 import User from "./pages/User";
+import ResponseDetails from "./pages/ResponseDetails";
 import styles from "./styles/appRouterStyles";
 
 function RequireAuth({children, role}) {
@@ -88,6 +89,16 @@ function AppRouter() {
                         <RequireAuth>
                             <ProtectedLayout>
                                 <SurveyResponse/>
+                            </ProtectedLayout>
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/responses/:id"
+                    element={
+                        <RequireAuth>
+                            <ProtectedLayout>
+                                <ResponseDetails/>
                             </ProtectedLayout>
                         </RequireAuth>
                     }

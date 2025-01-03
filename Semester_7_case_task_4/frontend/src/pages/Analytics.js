@@ -5,11 +5,13 @@ import {
     ListItem,
     ListItemText,
     Tooltip,
-    IconButton,
+    IconButton, Typography, Button,
 } from "@mui/material";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import InsightsOutlinedIcon from "@mui/icons-material/InsightsOutlined";
 import api from "../api";
+import styles from "../styles/HomePageStyles";
+import AddIcon from "@mui/icons-material/Add";
 
 function Analytics() {
     const [responses, setResponses] = useState([]);
@@ -37,42 +39,56 @@ function Analytics() {
     };
 
     const handleEditClick = (responseId) => {
-        console.log(`clicked edit ${responseId}`)
+        navigate(`/responses/${responseId}`);
     }
 
     return (
-        <Box sx={{p: 4}}>
-            <List>
-                {responses.map((response) => (
-                    <ListItem
-                        key={response.id}
-                        sx={{
-                            "&:hover": {backgroundColor: "rgba(0, 0, 0, 0.08)"},
-                            display: "flex",
-                            cursor: "pointer",
-                        }}
-                        onClick={() => handleEditClick(response.id)}
-                        secondaryAction={
-                            <>
-                                <Tooltip title="Charts">
-                                    <IconButton
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleChartsClick(response.id);
-                                        }}>
-                                        <InsightsOutlinedIcon/>
-                                    </IconButton>
-                                </Tooltip>
-                            </>
-                        }
-                    >
-                        <ListItemText
-                            primary={`Survey ID: ${response.survey_id}`}
-                            secondary={`${userRole === 'admin' ? `User ID: ${response.user_id}` : ''}`}
-                        />
-                    </ListItem>
-                ))}
-            </List>
+        <Box sx={styles.container}>
+            <Box sx={styles.surveysSection}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 4,
+                    }}
+                >
+                    <Typography variant="h5" gutterBottom>
+                        Results
+                    </Typography>
+                </Box>
+                <List>
+                    {responses.map((response) => (
+                        <ListItem
+                            key={response.id}
+                            sx={{
+                                "&:hover": {backgroundColor: "rgba(0, 0, 0, 0.08)"},
+                                display: "flex",
+                                cursor: "pointer",
+                            }}
+                            onClick={() => handleEditClick(response.id)}
+                            secondaryAction={
+                                <>
+                                    <Tooltip title="Charts">
+                                        <IconButton
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleChartsClick(response.id);
+                                            }}>
+                                            <InsightsOutlinedIcon/>
+                                        </IconButton>
+                                    </Tooltip>
+                                </>
+                            }
+                        >
+                            <ListItemText
+                                primary={`Survey ID: ${response.survey_id}`}
+                                secondary={`${userRole === 'admin' ? `User ID: ${response.user_id}` : ''}`}
+                            />
+                        </ListItem>
+                    ))}
+                </List>
+            </Box>
         </Box>
     );
 }
