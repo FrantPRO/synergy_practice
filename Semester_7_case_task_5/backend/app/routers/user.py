@@ -63,7 +63,7 @@ def get_user_by_name(db: Session, name: str):
 
 
 def get_user_by_id(db: Session, id: int):
-    return db.query(User).filter(User.name == id).first()
+    return db.query(User).filter(User.id == id).first()
 
 
 def create_user(user: UserCreate, db: Session):
