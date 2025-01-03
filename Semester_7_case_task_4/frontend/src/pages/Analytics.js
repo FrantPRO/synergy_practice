@@ -38,10 +38,6 @@ function Analytics() {
         fetchResponses();
     }, []);
 
-    const handleChartsClick = (responseId) => {
-        navigate(`/charts/${responseId}`);
-    };
-
     const handleEditClick = (responseId) => {
         navigate(`/responses/${responseId}`);
     };
@@ -87,19 +83,6 @@ function Analytics() {
                                 cursor: "pointer",
                             }}
                             onClick={() => handleEditClick(response.id)}
-                            secondaryAction={
-                                <>
-                                    <Tooltip title="Charts">
-                                        <IconButton
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleChartsClick(response.id);
-                                            }}>
-                                            <InsightsOutlinedIcon/>
-                                        </IconButton>
-                                    </Tooltip>
-                                </>
-                            }
                         >
                             <ListItemText
                                 primary={`Survey ID: ${response.survey_id}`}

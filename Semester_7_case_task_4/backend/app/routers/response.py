@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -18,17 +18,19 @@ router = APIRouter(
 
 @router.get("/", response_model=List[ResponseOut])
 def read_responses(
+    survey_id: Optional[int] = None,
     db: Session = Depends(get_db),
     user_id: int = Depends(get_user_id)
 ):
-    if is_user_admin(user_id, db):
-        responses = db.query(Response).all()
-    else:
-        responses = (
-            db.query(Response)
-            .filter(Response.user_id == user_id)
-            .all()
-        )
+    query = db.query(Response)
+
+    if survey_id is not None:
+        query = query.filter(Response.survey_id == survey_id)
+
+    if not is_user_admin(user_id, db):
+        query = query.filter(Response.user_id == user_id)
+
+    responses = query.all()
     return responses
 
 

@@ -21,6 +21,7 @@ import AddIcon from "@mui/icons-material/Add";
 import api from "../api";
 import StatusModal from "../components/StatusModal";
 import styles from "../styles/HomePageStyles";
+import InsightsOutlinedIcon from "@mui/icons-material/InsightsOutlined";
 
 const Home = () => {
     const [surveys, setSurveys] = useState([]);
@@ -76,6 +77,10 @@ const Home = () => {
     const handleDeleteClick = (surveyId) => {
         setSelectedSurveyId(surveyId);
         setOpenDialog(true);
+    };
+
+    const handleChartsClick = (surveyId) => {
+        navigate(`/charts/${surveyId}`);
     };
 
     const handleConfirmDelete = async () => {
@@ -192,6 +197,16 @@ const Home = () => {
                                                         color="success.main">
                                                 Completed
                                             </Typography>
+                                        )}
+                                        {userRole === "admin" && (
+                                            <IconButton
+                                                sx={{marginRight: 3}}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleChartsClick(survey.id);
+                                                }}>
+                                                <InsightsOutlinedIcon/>
+                                            </IconButton>
                                         )}
                                         {userRole === "admin" && (
                                             <IconButton
