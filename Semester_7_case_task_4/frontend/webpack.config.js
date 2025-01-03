@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: './src/index.js',
@@ -18,8 +19,8 @@ module.exports = {
                 },
             },
             {
-                test: /\.css$/, // Поддержка CSS-файлов
-                use: ['style-loader', 'css-loader'], // Используем style-loader и css-loader
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader'],
             },
         ],
     },
@@ -30,11 +31,22 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: './public/index.html',
         }),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, 'public'),
+                    to: path.resolve(__dirname, 'dist'),
+                    globOptions: {
+                        ignore: ['**/index.html'],
+                    },
+                },
+            ],
+        }),
     ],
     devServer: {
         static: [
             {
-                directory: path.resolve(__dirname, 'public'), // Добавляем public как источник статических файлов
+                directory: path.resolve(__dirname, 'public'),
             },
             {
                 directory: path.resolve(__dirname, 'dist'),
