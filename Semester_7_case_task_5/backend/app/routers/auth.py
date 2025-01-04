@@ -24,7 +24,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
     db_user = get_user_by_name(db, user.name)
     if db_user:
         raise HTTPException(status_code=400,
-                            detail="User name already registered")
+                            detail="Username already registered")
     return create_user(user, db)
 
 
@@ -33,6 +33,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
 def login(form_data: OAuth2PasswordRequestForm = Depends(),
           db: Session = Depends(get_db)):
     user = get_user_by_name(db, form_data.username)
+    print(user, form_data.username, form_data.password,user.hashed_password )
     if not user or not pwd_context.verify(form_data.password,
                                           user.hashed_password):
         raise HTTPException(status_code=400,
