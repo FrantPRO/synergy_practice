@@ -29,4 +29,4 @@ class SurveyOut(SurveyBase):
     created_at: datetime
 
     class Config:
-        from_attributes = True  # В SQLAlchemy 2.0 'orm_mode' заменено на 'from_attributes'
+        from_attributes = True

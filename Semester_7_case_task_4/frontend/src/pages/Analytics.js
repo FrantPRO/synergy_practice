@@ -4,14 +4,11 @@ import {
     List,
     ListItem,
     ListItemText,
-    Tooltip,
-    IconButton,
     Typography,
     CircularProgress,
     Alert,
 } from "@mui/material";
 import {useNavigate} from "react-router-dom";
-import InsightsOutlinedIcon from "@mui/icons-material/InsightsOutlined";
 import api from "../api";
 import styles from "../styles/HomePageStyles";
 

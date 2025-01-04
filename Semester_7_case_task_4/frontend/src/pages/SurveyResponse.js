@@ -59,8 +59,8 @@ function SurveyResponse() {
             const responses = methods.getValues("responses");
 
             const responsesArray = Object.keys(responses).map((key) => ({
-                question_id: parseInt(key, 10), // Номер вопроса
-                answer: responses[key], // Ответ
+                question_id: parseInt(key, 10),
+                answer: responses[key],
             }));
 
             await api.post(`/responses/${surveyId}`, {responses: responsesArray});

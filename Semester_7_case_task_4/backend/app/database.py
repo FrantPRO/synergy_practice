@@ -20,9 +20,6 @@ class Base:
 
 
 def get_db():
-    """
-    Dependency для получения сессии базы данных.
-    """
     db = SessionLocal()
     try:
         yield db

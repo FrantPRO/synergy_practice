@@ -60,12 +60,10 @@ def create_survey_responses(
     db: Session = Depends(get_db),
     user_id: int = Depends(get_user_id)
 ):
-    # Проверяем существование опроса
     survey = db.query(Survey).filter(Survey.id == survey_id).first()
     if not survey:
         raise HTTPException(status_code=404, detail="Survey not found")
 
-    # Проверяем, не отвечал ли пользователь уже на этот опрос
     existing_response = db.query(Response).filter(
         Response.survey_id == survey_id,
         Response.user_id == user_id
@@ -74,7 +72,6 @@ def create_survey_responses(
         raise HTTPException(status_code=400,
                             detail="User has already responded to this survey")
 
-    # Создаём ответ
     response = Response(
         survey_id=survey_id,
         user_id=user_id,

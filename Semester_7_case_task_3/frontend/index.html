@@ -16,7 +16,6 @@
     </header>
     <main>
         <ul id="task-list">
-            <!-- Список задач будет динамически заполняться через JavaScript -->
         </ul>
     </main>
     <div id="toast-container"></div>
@@ -27,7 +26,6 @@
             const taskList = document.getElementById('task-list');
             const token = localStorage.getItem('token');
 
-            // Функция для отображения уведомлений
             function showToast(message, type = 'info') {
                 const toastContainer = document.getElementById('toast-container');
                 const toast = document.createElement('div');
@@ -37,14 +35,12 @@
                 setTimeout(() => toast.remove(), 3000);
             }
 
-            // Проверяем наличие токена
             if (!token) {
                 showToast('You are not logged in. Redirecting to login page.', 'error');
                 window.location.href = 'login.html';
                 return;
             }
 
-            // Функция для загрузки задач
             async function loadTasks() {
                 try {
                     const response = await fetch(apiUrl, {
@@ -75,9 +71,8 @@
                 }
             }
 
-            // Функция для отображения задач с кнопками
             function renderTasks(tasks) {
-                taskList.innerHTML = ''; // Очищаем список перед обновлением
+                taskList.innerHTML = '';
                 tasks.forEach(task => {
                     const listItem = document.createElement('li');
                     listItem.classList.add('task-item');
@@ -109,7 +104,6 @@
                 });
             }
             
-            // Функция для удаления задачи
             async function deleteTask(taskId) {
                 if (confirm('Are you sure you want to delete this task?')) {
                     try {
@@ -134,7 +128,6 @@
                 }
             }
 
-            // Функция для логаута
             async function logout() {
                 try {
                     const response = await fetch(logoutUrl, {
@@ -158,10 +151,8 @@
                 }
             }
 
-            // Обработчик события для кнопки Logout
             document.getElementById('logout-btn').addEventListener('click', logout);
 
-            // Загружаем задачи при загрузке страницы
             loadTasks();
         });
     </script>

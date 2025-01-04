@@ -18,7 +18,6 @@ def register():
     if not username or not password:
         return jsonify({'error': 'Username and password are required'}), 400
 
-    # Проверяем, существует ли пользователь с таким именем
     existing_user = User.query.filter_by(username=username).first()
     if existing_user:
         return jsonify(
@@ -32,7 +31,7 @@ def register():
         db.session.commit()
         return jsonify({'message': 'User registered successfully'}), 201
     except Exception as e:
-        db.session.rollback()  # Откат изменений в случае ошибки
+        db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
 
@@ -49,7 +48,6 @@ def login():
     if not check_password_hash(user.password, password):
         return jsonify({'error': 'Invalid credentials'}), 401
 
-    # Преобразуем user.id в строку
     access_token = create_access_token(identity=str(user.id),
                                        expires_delta=datetime.timedelta(
                                            hours=1))

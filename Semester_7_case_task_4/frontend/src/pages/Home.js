@@ -19,14 +19,11 @@ import {Link, useNavigate} from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import api from "../api";
-import StatusModal from "../components/StatusModal";
 import styles from "../styles/HomePageStyles";
 import InsightsOutlinedIcon from "@mui/icons-material/InsightsOutlined";
 
 const Home = () => {
     const [surveys, setSurveys] = useState([]);
-    const [currentStages, setCurrentStages] = useState([]);
-    const [isStatusModalOpen, setStatusModalOpen] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [openDialog, setOpenDialog] = useState(false);
@@ -255,11 +252,6 @@ const Home = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <StatusModal
-                open={isStatusModalOpen}
-                onClose={() => setStatusModalOpen(false)}
-                stages={currentStages}
-            />
         </Box>
     );
 };

@@ -13,11 +13,9 @@ from app.models.survey import Survey
 
 config = context.config
 
-# Настройка логирования
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Метаданные для моделей
 target_metadata = Base.metadata
 
 def run_migrations_offline():

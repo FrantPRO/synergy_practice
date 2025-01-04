@@ -6,7 +6,6 @@ import {
     Button,
     Menu,
     MenuItem,
-    Stack,
 } from "@mui/material";
 import {Link, useNavigate} from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -26,15 +25,15 @@ function Header() {
         navigate("/login");
     };
 
-    const [anchorEl, setAnchorEl] = useState(null); // Элемент, к которому привязано меню
-    const open = Boolean(anchorEl); // Состояние открытия меню
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
 
     const handleClick = (event) => {
-        setAnchorEl(event.currentTarget); // Открыть меню
+        setAnchorEl(event.currentTarget);
     };
 
     const handleClose = () => {
-        setAnchorEl(null); // Закрыть меню
+        setAnchorEl(null);
     };
 
     return (

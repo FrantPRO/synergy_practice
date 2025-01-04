@@ -38,12 +38,10 @@
             const pageTitle = document.getElementById('page-title');
             const taskForm = document.getElementById('task-form');
 
-            // Проверяем, есть ли task_id в параметрах URL
             const params = new URLSearchParams(window.location.search);
             const taskId = params.get('task_id');
 
             if (taskId) {
-                // Если есть task_id, переключаем страницу на режим редактирования
                 pageTitle.textContent = 'Edit Task';
                 fetch(`${apiUrl}/${taskId}`, {
                     method: 'GET',
@@ -70,7 +68,6 @@
                     });
             }
 
-            // Обработка формы
             taskForm.addEventListener('submit', (e) => {
                 e.preventDefault();
 
@@ -107,7 +104,6 @@
                     });
             });
 
-            // Функция для отображения уведомлений
             function showToast(message, type = 'info') {
                 const toastContainer = document.getElementById('toast-container');
                 const toast = document.createElement('div');

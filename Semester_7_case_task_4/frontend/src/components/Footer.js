@@ -11,7 +11,7 @@ function Footer() {
         backgroundColor: '#f0f0f0',
       }}
     >
-      <Typography variant="body2">©2024 Survey App</Typography>
+      <Typography variant="body2">©2025 Survey App</Typography>
     </Box>
   );
 }

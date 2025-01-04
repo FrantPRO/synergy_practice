@@ -13,7 +13,8 @@ import {
     DialogActions,
     DialogContent,
     DialogContentText,
-    DialogTitle, Alert, CircularProgress,
+    DialogTitle,
+    CircularProgress,
 } from "@mui/material";
 import {Link, useNavigate} from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";

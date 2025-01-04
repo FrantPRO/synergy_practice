@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {useNavigate, useLocation} from "react-router-dom";
 import {
     TextField,
@@ -9,7 +9,7 @@ import {
     Alert
 } from "@mui/material";
 import api from "../api";
-import authStyles from "../styles/authStyles"; // Подключаем стили
+import authStyles from "../styles/authStyles";
 import {jwtDecode} from "jwt-decode";
 
 function getUserInfoFromToken(token) {

@@ -12,12 +12,10 @@ class ResponseOut(BaseModel):
     created_at: datetime
 
 
-# Модель для валидации отдельного ответа
 class ResponseItem(BaseModel):
     question_id: int
     answer: Any
 
 
-# Модель для входящих данных
 class ResponseCreate(BaseModel):
-    responses: List[ResponseItem] = Field(..., min_length=1)  # как минимум 1 ответ должен быть
+    responses: List[ResponseItem] = Field(..., min_length=1)

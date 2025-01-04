@@ -134,7 +134,6 @@ button:hover {
     background-color: #145aa7;
 }
 
-/* Всплывающие сообщения */
 #toast-container {
     position: fixed;
     bottom: 10px;
@@ -201,7 +200,7 @@ li {
 }
 
 .delete-btn {
-    background-color: #dc3545; /* Красный */
+    background-color: #dc3545;
     color: white;
     border: none;
     padding: 8px 12px;
@@ -219,7 +218,6 @@ li {
     margin: 0;
 }
 
-/* Общие стили задач */
 .task-item {
     display: flex;
     justify-content: space-between;
@@ -231,13 +229,11 @@ li {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Группа кнопок для задач */
 .button-group {
     display: flex;
     gap: 10px;
 }
 
-/* Кнопка редактирования задачи */
 .btn.edit-btn {
     background-color: #ffc107;
     color: white;
@@ -251,7 +247,6 @@ li {
     background-color: #e0a800;
 }
 
-/* Кнопка удаления задачи */
 .btn.delete-btn {
     background-color: #dc3545;
     color: white;

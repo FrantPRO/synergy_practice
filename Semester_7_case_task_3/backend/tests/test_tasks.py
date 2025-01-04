@@ -12,7 +12,6 @@ def client():
     with app.app_context():
         db.create_all()
 
-        # Создаём пользователя для тестов с зашифрованным паролем
         hashed_password = bcrypt.generate_password_hash('testpassword').decode('utf-8')
         user = User(username='testuser', password=hashed_password)
         db.session.add(user)
@@ -49,14 +48,12 @@ def test_create_task(client):
 def test_get_tasks(client):
     token = get_auth_token(client)
 
-    # Создаём задачу
     client.post('/tasks', json={
         'title': 'Test Task',
         'description': 'This is a test task.',
         'due_date': '2024-12-31'
     }, headers={'Authorization': f'Bearer {token}'})
 
-    # Проверяем список задач
     response = client.get('/tasks',
                           headers={'Authorization': f'Bearer {token}'})
     assert response.status_code == 200
