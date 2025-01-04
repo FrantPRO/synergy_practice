@@ -18,7 +18,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
-# Registration
 @router.post("/register", response_model=UserOut)
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
     db_user = get_user_by_name(db, user.name)
@@ -28,7 +27,6 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
     return create_user(user, db)
 
 
-# Login
 @router.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(),
           db: Session = Depends(get_db)):
@@ -43,7 +41,6 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(),
     return {"access_token": token, "token_type": "bearer"}
 
 
-# Get current user
 @router.get("/me", response_model=UserOut)
 def get_current_user(token: str = Depends(oauth2_scheme),
                      db: Session = Depends(get_db)):

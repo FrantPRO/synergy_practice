@@ -3,7 +3,6 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from .auth import authentication
 from ..database import get_db
 from ..models.category import Category
 from ..schemas.category import CategoryBase, CategoryOut, CategoryUpdate
@@ -26,11 +25,6 @@ def create_category(category: CategoryBase, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_category)
     return db_category
-
-
-@router.get("/", response_model=list[CategoryOut])
-def get_categories(db: Session = Depends(get_db)):
-    return db.query(Category).all()
 
 
 @router.get("/{category_id}", response_model=CategoryOut)
