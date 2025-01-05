@@ -54,7 +54,14 @@ function Transaction() {
         },
     });
 
-    const {register, watch, setValue, formState, handleSubmit} = methods;
+    const {
+        register,
+        watch,
+        setValue,
+        formState,
+        handleSubmit,
+        reset
+    } = methods;
 
     useEffect(() => {
         async function fetchData() {
@@ -64,17 +71,37 @@ function Transaction() {
 
                 if (id) {
                     const transactionResponse = await api.get(`/transactions/${id}`);
-                    methods.reset(transactionResponse.data);
+                    if (transactionResponse.data) {
+                        const transactionData = {
+                            amount: transactionResponse.data.amount || 0,
+                            category_id: transactionResponse.data.category_id || "",
+                            description: transactionResponse.data.description || "",
+                            type: transactionResponse.data.type || TransactionType.EXPENSE,
+                            date: transactionResponse.data.date.split('T')[0],
+                        };
+                        reset(transactionData, {shouldUnregister: true});
+                    } else {
+                        setError("Transaction not found");
+                    }
+                } else {
+                    reset({
+                        amount: 0,
+                        category_id: "",
+                        description: "",
+                        type: TransactionType.EXPENSE,
+                        date: new Date().toISOString().split('T')[0],
+                    }, {shouldUnregister: true});
                 }
             } catch (error) {
-                setError(error.message);
+                console.error('Error:', error);
+                setError(error.message || "Failed to load data");
             } finally {
                 setIsLoading(false);
             }
         }
 
         fetchData();
-    }, [id, methods]);
+    }, [id, reset]);
 
     const handleSave = async (data) => {
         try {
@@ -101,7 +128,7 @@ function Transaction() {
                     severity: "success",
                 });
             }
-            navigate("/");
+            navigate("/transactions");
         } catch (error) {
             setSnackbar({
                 open: true,
@@ -319,7 +346,7 @@ function Transaction() {
                         <Button
                             variant="outlined"
                             color="secondary"
-                            onClick={() => navigate("/")}
+                            onClick={() => navigate("/transactions")}
                             size="small"
                         >
                             Cancel

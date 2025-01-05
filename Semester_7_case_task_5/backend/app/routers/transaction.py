@@ -31,13 +31,13 @@ def get_transactions(db: Session = Depends(get_db),
     return db.query(Transaction).filter(Transaction.user_id == user_id).all()
 
 
-@router.get("/{transaction_id}", response_model=List[TransactionOut])
+@router.get("/{transaction_id}", response_model=TransactionOut)
 def get_transaction_by_id(transaction_id: int, db: Session = Depends(get_db),
                           user_id: int = Depends(get_user_id)):
     return (db.query(Transaction)
             .filter(Transaction.id == transaction_id)
             .filter(Transaction.user_id == user_id)
-            .all())
+            .first())
 
 
 @router.put("/{transaction_id}", response_model=TransactionOut)

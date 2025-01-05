@@ -7,7 +7,7 @@ import {
     Button,
     MenuItem,
     Snackbar,
-    Alert, FormControl, InputLabel, Select,
+    Alert,
 } from "@mui/material";
 import api from "../api";
 
@@ -15,11 +15,9 @@ function User() {
     const {id} = useParams();
     const navigate = useNavigate();
     const [user, setUser] = useState({
-        username: "",
+        name: "",
         password: "",
-        role: "",
     });
-    const [roles, setRoles] = useState([]);
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: "",
@@ -27,21 +25,6 @@ function User() {
     });
 
     useEffect(() => {
-        async function fetchRoles() {
-            try {
-                const response = await api.get("/users/roles");
-                if (response.status === 200) {
-                    setRoles(response.data);
-                } else {
-                    console.error("Failed to fetch roles:", response.statusText);
-                }
-            } catch (error) {
-                console.error("Error fetching roles:", error);
-            }
-        }
-
-        fetchRoles();
-
         if (id !== "new") {
             async function fetchUser() {
                 try {
@@ -121,7 +104,7 @@ function User() {
                 variant="outlined"
                 fullWidth
                 margin="normal"
-                value={user.username}
+                value={user.name}
                 onChange={handleChange}
             />
             {id === "new" && (
@@ -136,22 +119,6 @@ function User() {
                     onChange={handleChange}
                 />
             )}
-            <TextField
-                select
-                label="Role"
-                name="role"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={user.role}
-                onChange={handleChange}
-            >
-                {roles.map((role) => (
-                    <MenuItem key={role.name} value={role.name}>
-                        {role.name}
-                    </MenuItem>
-                ))}
-            </TextField>
             <Box sx={{display: "flex", gap: 2}}>
                 <Button variant="contained" color="primary"
                         onClick={handleSave}>

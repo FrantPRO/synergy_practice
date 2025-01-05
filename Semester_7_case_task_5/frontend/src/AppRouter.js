@@ -11,6 +11,7 @@ import Home from './pages/Home';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Transaction from './pages/Transaction';
+import Transactions from "./pages/Transactions";
 import Users from './pages/Users';
 import User from "./pages/User";
 import styles from "./styles/appRouterStyles";
@@ -55,11 +56,21 @@ function AppRouter() {
                     }
                 />
                 <Route
-                    path="/transaction"
+                    path="/transaction/:id?"
                     element={
                         <RequireAuth>
                             <ProtectedLayout>
                                 <Transaction/>
+                            </ProtectedLayout>
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/transactions"
+                    element={
+                        <RequireAuth>
+                            <ProtectedLayout>
+                                <Transactions/>
                             </ProtectedLayout>
                         </RequireAuth>
                     }
