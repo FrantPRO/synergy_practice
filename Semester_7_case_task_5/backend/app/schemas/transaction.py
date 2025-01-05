@@ -6,6 +6,7 @@ class TransactionBase(BaseModel):
     amount: float
     description: str
     category_id: int
+    user_id: int
 
 
 class TransactionCreate(TransactionBase):
@@ -18,7 +19,6 @@ class TransactionUpdate(TransactionBase):
 
 class TransactionOut(TransactionBase):
     id: int
-    user_id: int
     date: datetime
 
     class Config:

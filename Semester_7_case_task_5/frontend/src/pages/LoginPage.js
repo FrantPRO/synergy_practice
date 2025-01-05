@@ -15,7 +15,7 @@ import {jwtDecode} from "jwt-decode";
 function getUserInfoFromToken(token) {
     try {
         const decodedToken = jwtDecode(token);
-        return {role: decodedToken.role, name: decodedToken.name};
+        return {id: decodedToken.sub, name: decodedToken.name};
     } catch (error) {
         console.error("Invalid token:", error);
         return null;
@@ -49,7 +49,6 @@ function LoginPage() {
         }
 
         try {
-            console.log("isSignUp", isSignUp)
             const endpoint = isSignUp ? "/auth/register" : "/auth/login";
             const requestData = isSignUp
                 ? {name: username, password: password}
@@ -72,7 +71,7 @@ function LoginPage() {
                     localStorage.setItem("access_token", response.data.access_token);
                     const userInfo = getUserInfoFromToken(response.data.access_token);
                     localStorage.setItem("user_name", userInfo.name);
-                    localStorage.setItem("user_role", userInfo.role);
+                    localStorage.setItem("user_id", userInfo.id);
 
                     setSnackbar({
                         open: true,

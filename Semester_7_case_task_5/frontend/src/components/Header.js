@@ -49,11 +49,8 @@ function Header() {
                 >
                     MoneyFlow
                 </Typography>
-                <Button color="inherit" component={Link} to="/analytics">
+                <Button color="inherit" component={Link} to="/transactions">
                     Transactions
-                </Button>
-                <Button color="inherit" component={Link} to="/analytics">
-                    Statistics
                 </Button>
                 {userName === "admin" && (
                     <Button color="inherit" component={Link} to="/users">
@@ -78,7 +75,6 @@ function Header() {
                     onClose={handleClose}
                 >
                     <MenuItem onClick={handleImportExport}>
-                        <LogoutIcon sx={{marginRight: 1}}/>
                         import/export
                     </MenuItem>
                     <MenuItem onClick={handleLogout}>
