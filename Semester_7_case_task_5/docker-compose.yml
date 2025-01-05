@@ -14,16 +14,16 @@ services:
     volumes:
       - ./backend/app:/code/app
 
-#  frontend:
-#    build:
-#      context: ./frontend
-#      dockerfile: Dockerfile
-#    container_name: frontend_app
-#    restart: always
-#    ports:
-#      - "80:80"
-#    depends_on:
-#      - backend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend_app
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
 
   db:
     image: postgres:14
