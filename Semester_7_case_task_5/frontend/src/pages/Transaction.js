@@ -5,7 +5,6 @@ import {
     Typography,
     TextField,
     Button,
-    Select,
     MenuItem,
     FormControl,
     InputLabel,
@@ -16,7 +15,11 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    ToggleButton,
+    ToggleButtonGroup,
+    Select,
 } from "@mui/material";
+import Grid from '@mui/material/Grid2';
 import {useForm, FormProvider} from "react-hook-form";
 import AddIcon from "@mui/icons-material/Add";
 import api from "../api";
@@ -36,13 +39,22 @@ function Transaction() {
     const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState("");
 
+    const TransactionType = {
+        INCOME: "income",
+        EXPENSE: "expense",
+    };
+
     const methods = useForm({
         defaultValues: {
             amount: 0,
             category_id: "",
             description: "",
+            type: TransactionType.EXPENSE,
+            date: new Date().toISOString().split('T')[0],
         },
     });
+
+    const {register, watch, setValue, formState, handleSubmit} = methods;
 
     useEffect(() => {
         async function fetchData() {
@@ -123,6 +135,12 @@ function Transaction() {
         setSnackbar((prev) => ({...prev, open: false}));
     };
 
+    const handleTypeChange = (event, newType) => {
+        if (newType !== null) {
+            setValue("type", newType);
+        }
+    };
+
     if (isLoading) {
         return (
             <Box sx={styles.container}>
@@ -143,51 +161,143 @@ function Transaction() {
         <FormProvider {...methods}>
             <Box sx={{display: "flex", justifyContent: "center", p: 3}}>
                 <Box sx={{width: "60%", minWidth: "400px"}}>
-                    <Typography variant="h5" gutterBottom>
-                        {id ? "Edit Transaction" : "Create Transaction"}
-                    </Typography>
 
-                    <TextField
-                        {...methods.register("amount", {required: "Amount is required"})}
-                        label="Amount"
-                        type="number"
-                        variant="outlined"
-                        fullWidth
-                        margin="dense"
-                        size="small"
-                        required
-                        error={!!methods.formState.errors.amount}
-                        helperText={methods.formState.errors.amount?.message}
-                    />
-
-                    <FormControl fullWidth margin="dense" size="small">
-                        <InputLabel>Category</InputLabel>
-                        <Select
-                            {...methods.register("category_id", {required: "Category is required"})}
-                            label="Category"
-                            value={methods.watch("category_id") || ""}
-                            onChange={(e) => methods.setValue("category_id", e.target.value)}
-                            error={!!methods.formState.errors.category_id}
-                        >
-                            {categories.map((category) => (
-                                <MenuItem key={category.id} value={category.id}>
-                                    {category.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-
-                    <Button
-                        variant="outlined"
-                        startIcon={<AddIcon/>}
-                        onClick={() => setOpenCategoryDialog(true)}
-                        sx={{mt: 1, mb: 2}}
+                    <Grid
+                        container
+                        spacing={2}
+                        direction="row"
+                        minHeight={70}
+                        sx={{
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                        }}
                     >
-                        Add New Category
-                    </Button>
+                        <Grid size={{xs: 7, md: 7}}>
+                            <Typography variant="h5" gutterBottom>
+                                {id ? "Edit Transaction" : "Create Transaction"}
+                            </Typography>
+                        </Grid>
+                        <Grid size={{xs: 5, md: 5}}>
+                            <ToggleButtonGroup
+                                value={watch("type") || TransactionType.EXPENSE}
+                                exclusive
+                                onChange={handleTypeChange}
+                                aria-label="Transaction type"
+                                fullWidth
+                                sx={{height: "40px"}}
+                            >
+                                <ToggleButton
+                                    value={TransactionType.INCOME}
+                                    aria-label="Income"
+                                    sx={{
+                                        backgroundColor: watch("type") === TransactionType.INCOME ? "#4caf50 !important" : "#e0e0e0 !important",
+                                        color: watch("type") === TransactionType.INCOME ? "#fff !important" : "#000 !important",
+                                        "&:hover": {
+                                            backgroundColor: watch("type") === TransactionType.INCOME ? "#388e3c !important" : "#bdbdbd !important",
+                                        },
+                                    }}
+                                >
+                                    Income
+                                </ToggleButton>
+                                <ToggleButton
+                                    value={TransactionType.EXPENSE}
+                                    aria-label="Expense"
+                                    sx={{
+                                        backgroundColor: watch("type") === TransactionType.EXPENSE ? "#f44336 !important" : "#e0e0e0 !important",
+                                        color: watch("type") === TransactionType.EXPENSE ? "#fff !important" : "#000 !important",
+                                        "&:hover": {
+                                            backgroundColor: watch("type") === TransactionType.EXPENSE ? "#d32f2f !important" : "#bdbdbd !important",
+                                        },
+                                    }}
+                                >
+                                    Expense
+                                </ToggleButton>
+                            </ToggleButtonGroup>
+                        </Grid>
+                    </Grid>
+
+                    <Grid
+                        container
+                        spacing={2}
+                        direction="row"
+                        minHeight={60}
+                        sx={{
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Grid size={{xs: 6, md: 6}}>
+                            <TextField
+                                {...register("amount", {required: "Amount is required"})}
+                                label="Amount"
+                                type="number"
+                                variant="outlined"
+                                fullWidth
+                                size="small"
+                                required
+                                error={!!formState.errors.amount}
+                                helperText={formState.errors.amount?.message}
+                            />
+                        </Grid>
+                        <Grid size={{xs: 6, md: 6}}>
+                            <TextField
+                                label="Date"
+                                type="date"
+                                {...register("date", {required: "Date is required"})}
+                                slotProps={{inputLabel: {shrink: true}}}
+                                fullWidth
+                                size="small"
+                                required
+                                error={!!formState.errors.date}
+                                helperText={formState.errors.date?.message}
+                            />
+                        </Grid>
+                    </Grid>
+
+                    <Grid
+                        container
+                        spacing={2}
+                        direction="row"
+                        minHeight={60}
+                        sx={{
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Grid size={{xs: 8, md: 8}}>
+                            <FormControl fullWidth size="small">
+                                <InputLabel>Category</InputLabel>
+                                <Select
+                                    {...register("category_id", {required: "Category is required"})}
+                                    label="Category"
+                                    value={watch("category_id") || ""}
+                                    onChange={(e) => setValue("category_id", e.target.value)}
+                                    error={!!formState.errors.category_id}
+                                >
+                                    {categories.map((category) => (
+                                        <MenuItem key={category.id}
+                                                  value={category.id}>
+                                            {category.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid size={{xs: 4, md: 4}}>
+                            <Button
+                                fullWidth
+                                variant="outlined"
+                                startIcon={<AddIcon/>}
+                                onClick={() => setOpenCategoryDialog(true)}
+                                sx={{height: "40px"}}
+                            >
+                                Add Category
+                            </Button>
+                        </Grid>
+                    </Grid>
 
                     <TextField
-                        {...methods.register("description")}
+                        {...register("description")}
                         label="Description"
                         variant="outlined"
                         fullWidth
@@ -201,7 +311,7 @@ function Transaction() {
                         <Button
                             variant="contained"
                             color="primary"
-                            onClick={methods.handleSubmit(handleSave)}
+                            onClick={handleSubmit(handleSave)}
                             size="small"
                         >
                             {id ? "Save Changes" : "Create Transaction"}
