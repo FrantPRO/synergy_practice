@@ -14,6 +14,7 @@ import Transaction from './pages/Transaction';
 import Transactions from "./pages/Transactions";
 import Users from './pages/Users';
 import User from "./pages/User";
+import ImportExport from "./pages/ImportExport";
 import styles from "./styles/appRouterStyles";
 
 function RequireAuth({children}) {
@@ -91,6 +92,16 @@ function AppRouter() {
                         <RequireAuth>
                             <ProtectedLayout>
                                 <User/>
+                            </ProtectedLayout>
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/import-export"
+                    element={
+                        <RequireAuth>
+                            <ProtectedLayout>
+                                <ImportExport/>
                             </ProtectedLayout>
                         </RequireAuth>
                     }

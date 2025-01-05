@@ -1,6 +1,10 @@
+import csv
+import io
+from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from .auth import get_user_id
@@ -23,6 +27,78 @@ def create_transaction(transaction: TransactionCreate,
     db.commit()
     db.refresh(db_transaction)
     return db_transaction
+
+
+@router.get("/export")
+def export_transactions(db: Session = Depends(get_db),
+                        user_id: int = Depends(get_user_id)):
+    transactions = (
+        db.query(Transaction)
+        .filter(Transaction.user_id == user_id)
+        .all()
+    )
+
+    if not transactions:
+        raise HTTPException(status_code=404, detail="No transactions found")
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    writer.writerow(
+        ["id", "amount", "category_id", "description", "type", "date"]
+    )
+
+    for transaction in transactions:
+        writer.writerow([
+            transaction.id,
+            transaction.amount,
+            transaction.category_id,
+            transaction.description,
+            transaction.type,
+            transaction.date.isoformat(),
+        ])
+
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=transactions.csv"}
+    )
+
+
+@router.post("/import")
+def import_transactions(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_user_id)
+):
+    content = file.file.read().decode("utf-8")
+    csv_reader = csv.DictReader(io.StringIO(content))
+
+    transactions = []
+    for row in csv_reader:
+        try:
+            transaction = Transaction(
+                amount=float(row["amount"]),
+                category_id=int(row["category_id"]),
+                description=row["description"],
+                type=row["type"],
+                date=datetime.fromisoformat(row["date"]),
+                user_id=user_id,
+            )
+            transactions.append(transaction)
+        except (KeyError, ValueError) as e:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid CSV data: {str(e)}"
+            )
+
+    db.add_all(transactions)
+    db.commit()
+
+    return {
+        "message": f"{len(transactions)} transactions imported successfully"
+    }
 
 
 @router.get("/", response_model=List[TransactionOut])
