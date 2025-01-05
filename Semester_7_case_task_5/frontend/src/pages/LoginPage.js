@@ -6,7 +6,8 @@ import {
     Card,
     CardActions,
     Snackbar,
-    Alert
+    Alert,
+    Typography,
 } from "@mui/material";
 import api from "../api";
 import authStyles from "../styles/authStyles";
@@ -98,9 +99,9 @@ function LoginPage() {
         <form noValidate onSubmit={handleLogin}>
             <div style={authStyles.main}>
                 <Card sx={authStyles.card}>
-                    <div style={authStyles.avatar}>
-                        <img src="logo.svg" alt="Logo" width="150"/>
-                    </div>
+                    <Typography variant="h3" sx={authStyles.logoText}>
+                        Money
+                    </Typography>
                     <div style={authStyles.form}>
                         <TextField
                             id="username"
